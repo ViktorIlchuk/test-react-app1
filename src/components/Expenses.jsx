@@ -12,9 +12,7 @@ const Expenses = ({expenses}) => {
         </div>
     )
 }
-
-const mapStateToProps = state => {
-    return state
-}
-
+const mapStateToProps = state => ({
+    expenses: state.expenses
+})
 export default connect(mapStateToProps)(Expenses)

@@ -1,26 +1,44 @@
 import React, {Component} from "react";
 import { connect } from "react-redux";
-import { createItem } from "../redux/actions"
+import { createItem, deleteItem } from "../redux/actions"
 
 class ExpensesForm extends Component {
 
     state = {
-        title: ''
+        inputText: ''
     }
 
     submitHandler = event => {
         event.preventDefault();
-        const {title} = this.state;
 
-        if (!title.trim()) {
+        const {inputText} = this.state;
+        if (!inputText.trim()) {
             return
         }
+        
+        const splitInputText = this.state.inputText.split(' ');
+        const [commandName] = splitInputText;
 
-        const newItem = {
-            title, id: Date.now().toString() 
+        if (commandName === 'clear') {
+            const [_, data] = splitInputText;
+            this.props.deleteItem(data);
         }
-        this.props.createItem(newItem)
-         this.setState({title: ''})
+        
+        if (commandName === 'add') {
+            const [_, data, price, currency, name] = splitInputText;
+
+            const newItem = {
+                id: Date.now().toString(),
+                data,
+                price,
+                currency,
+                name
+            };
+            this.props.createItem(newItem);
+        };
+
+
+        this.setState({inputText: ''});
     }
     
     render() {
@@ -30,8 +48,8 @@ class ExpensesForm extends Component {
                 <input 
                 className="expenseInput" 
                 type="text"
-                value={this.state.title}
-                onChange={event => this.setState({title: event.target.value})}
+                value={this.state.inputText}
+                onChange={event => this.setState({inputText: event.target.value})}
                 />
                 <button type="submit">Add expense</button>
             </form>
@@ -40,7 +58,7 @@ class ExpensesForm extends Component {
 }
 
 const mapDispatchToProps = {
-    createItem
+    createItem, deleteItem
 }
 
 export default connect(null, mapDispatchToProps)(ExpensesForm);
